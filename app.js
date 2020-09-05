@@ -68,8 +68,30 @@ app.post('/api/books', async (req, res) => {
 
 // @desc    Delete book
 // @route   DELETE /api/books/:id
-app.delete('/api/books/:id', (req, res) => {
-    res.send('Delete book');
+app.delete('/api/books/:id', async (req, res) => {
+    try {
+        const book = await Book.findById(req.params.id);
+    
+        if(!book) {
+          return res.status(404).json({
+            success: false,
+            error: 'No book found'
+          });
+        }
+    
+        await book.remove();
+    
+        return res.status(200).json({
+          success: true,
+          data: {}
+        });
+    
+      } catch (err) {
+        return res.status(500).json({
+          success: false,
+          error: 'Server Error'
+        });
+      }
 });
 
 // @desc    Single book
@@ -92,8 +114,26 @@ app.get('/api/books/:id', async (req, res) => {
 });
 // @desc    Update book
 // @route   PUT /api/books/:id
-app.put('/api/books/:id', (req, res) => {
-    res.send('Update book');
+app.put('/api/books/:id', async (req, res) => {
+    try {
+
+        const book = {
+          name: req.body.name,
+          price: req.body.price
+        };
+    
+        await Book.findByIdAndUpdate({ _id: req.params.id }, book, { useFindAndModify: false })
+      
+        return res.status(201).json({
+          success: true,
+          data: book
+        }); 
+      } catch (err) {
+        return res.status(500).json({
+          success: false,
+          error: 'Server Error'
+        });
+      }
 });
 
 const PORT = process.env.PORT || 5000;
