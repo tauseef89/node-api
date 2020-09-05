@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const Book = require('./models/Book');
-
+const cors = require("cors");
 const app = express();
 
 const books = require('./routes/books');
@@ -15,7 +14,7 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useCreateIndex: true, useUnifie
 
 // Middlewares
 app.use(express.json());
-
+app.use(cors());
 // routes
 app.get('/', (req, res) => {
     res.send('home page');
