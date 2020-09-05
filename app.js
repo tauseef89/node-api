@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const Book = require('./models/Book');
 
 const app = express();
 
@@ -10,6 +11,9 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useCreateIndex: true, useUnifie
   .then(result => console.log('Mongodb connected'))
   .catch(err => console.log(err));
 
+// Middlewares
+app.use(express.json());
+  
 // routes
 app.get('/', (req, res) => {
     res.send('home page');
@@ -23,8 +27,31 @@ app.get('/api/books', (req, res) => {
 
 // @desc    Add book
 // @route   POST /api/books
-app.post('/api/books', (req, res) => {
-    res.send('Add book');
+app.post('/api/books', async (req, res) => {
+    try {
+        const { name, price } = req.body;
+    
+        const book = await Book.create(req.body);
+      
+        return res.status(201).json({
+          success: true,
+          data: book
+        }); 
+      } catch (err) {
+        if(err.name === 'ValidationError') {
+          const messages = Object.values(err.errors).map(val => val.message);
+    
+          return res.status(400).json({
+            success: false,
+            error: messages
+          });
+        } else {
+          return res.status(500).json({
+            success: false,
+            error: 'Server Error'
+          });
+        }
+    }
 });
 
 // @desc    Delete book
