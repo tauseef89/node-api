@@ -13,7 +13,7 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useCreateIndex: true, useUnifie
 
 // Middlewares
 app.use(express.json());
-  
+
 // routes
 app.get('/', (req, res) => {
     res.send('home page');
@@ -21,8 +21,20 @@ app.get('/', (req, res) => {
 
 // @desc    Get all books
 // @route   GET /api/books
-app.get('/api/books', (req, res) => {
-    res.send('all books');
+app.get('/api/books', async (req, res) => {
+    try {
+        const books = await Book.find();
+    
+        return res.status(200).json({
+          success: true,
+          data: books
+        });
+      } catch (err) {
+        return res.status(500).json({
+          success: false,
+          error: 'Server Error'
+        });
+      }
 });
 
 // @desc    Add book
@@ -62,8 +74,21 @@ app.delete('/api/books/:id', (req, res) => {
 
 // @desc    Single book
 // @route   GET /api/books/:id
-app.get('/api/books/:id', (req, res) => {
-    res.send('Single book');
+app.get('/api/books/:id', async (req, res) => {
+    try {
+        const book = await Book.findById(req.params.id);
+    
+        return res.status(200).json({
+          success: true,
+          data: book
+        });
+    
+      } catch (err) {
+        return res.status(500).json({
+          success: false,
+          error: 'Server Error'
+        });
+      }
 });
 // @desc    Update book
 // @route   PUT /api/books/:id
