@@ -1,6 +1,13 @@
 const express = require('express');
-
+const mongoose = require('mongoose');
 const app = express();
+
+// connect to mongodb 
+const dbURI = "mongodb+srv://demo1:demo_123456@books.c8fjo.mongodb.net/Books";
+
+mongoose.connect(dbURI, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true })
+  .then(result => console.log('Mongodb connected'))
+  .catch(err => console.log(err));
 
 // routes
 app.get('/', (req, res) => {
